@@ -21,9 +21,6 @@ Trước khi bắt đầu, cần có:
 -   **Tài khoản GitHub**: để triển khai dự án.\
 -   **Project GitHub Pages**: repository đã bật tính năng GitHub Pages.
 
-![Cloudflare
-Dashboard](cloudflare.jpg)
-
 ------------------------------------------------------------------------
 
 ## 3. Địa chỉ IP của GitHub Pages
@@ -47,7 +44,7 @@ Danh sách IP chính thức của GitHub:
     2606:50c0:8003::153
 
 ![Cấu hình DNS trong
-Cloudflare](https://developers.cloudflare.com/dns/static/dns-records-ui.png)
+Cloudflare](cloudflare.jpg)
 
 ------------------------------------------------------------------------
 
