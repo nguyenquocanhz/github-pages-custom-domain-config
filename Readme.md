@@ -10,9 +10,6 @@ tốc và bảo mật website.
 Tài liệu này cung cấp quy trình từng bước để trỏ domain từ Cloudflare về
 GitHub Pages.
 
-![Minh họa GitHub
-Pages](https://docs.github.com/assets/cb-23923/mw-1440/images/help/pages/pages-overview.webp)
-
 ------------------------------------------------------------------------
 
 ## 2. Yêu cầu chuẩn bị
