@@ -10,9 +10,6 @@ tốc và bảo mật website.
 Tài liệu này cung cấp quy trình từng bước để trỏ domain từ Cloudflare về
 GitHub Pages.
 
-![Minh họa GitHub
-Pages](https://docs.github.com/assets/cb-23923/mw-1440/images/help/pages/pages-overview.webp)
-
 ------------------------------------------------------------------------
 
 ## 2. Yêu cầu chuẩn bị
@@ -23,9 +20,6 @@ Trước khi bắt đầu, cần có:
 -   **Domain hợp lệ**: đã mua và có quyền quản trị DNS.\
 -   **Tài khoản GitHub**: để triển khai dự án.\
 -   **Project GitHub Pages**: repository đã bật tính năng GitHub Pages.
-
-![Cloudflare
-Dashboard](cloudflare.jpg)
 
 ------------------------------------------------------------------------
 
@@ -50,7 +44,7 @@ Danh sách IP chính thức của GitHub:
     2606:50c0:8003::153
 
 ![Cấu hình DNS trong
-Cloudflare](https://developers.cloudflare.com/dns/static/dns-records-ui.png)
+Cloudflare](cloudflare.jpg)
 
 ------------------------------------------------------------------------
 
