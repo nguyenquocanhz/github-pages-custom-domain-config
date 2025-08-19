@@ -2,24 +2,11 @@
 <html lang="vi" class="scroll-smooth dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <title>GitHub Pages + Cloudflare — Custom Domain Guide</title>
   <meta name="description" content="Step-by-step guide to configuring a custom domain for GitHub Pages using Cloudflare. Includes DNS records, screenshots, and CLI commands." />
-  <meta name="keywords" content="GitHub Pages, Cloudflare, custom domain, DNS, A records, AAAA records, CNAME, HTTPS" />
-  <meta name="author" content="Nguyen Quoc Anh" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="GitHub Pages + Cloudflare — Custom Domain Guide" />
-  <meta property="og:description" content="A clean, fast, single-page guide with copyable commands and screenshots." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://docs.github.com/assets/cb-23923/mw-1440/images/help/pages/pages-overview.webp" />
-  <meta property="og:url" content="https://example.com" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="GitHub Pages + Cloudflare — Custom Domain Guide" />
-  <meta name="twitter:description" content="How to point a custom domain to GitHub Pages via Cloudflare." />
-  <meta name="twitter:image" content="https://docs.github.com/assets/cb-23923/mw-1440/images/help/pages/pages-overview.webp" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,9 +16,7 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-          boxShadow: {
-            'smooth': '0 10px 30px rgba(0,0,0,0.15)'
-          }
+          boxShadow: { 'smooth': '0 10px 30px rgba(0,0,0,0.15)' }
         }
       }
     }
@@ -40,82 +25,112 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Highlight.js for code syntax -->
+  <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
-  <!-- AOS for subtle scroll animations -->
+  <!-- AOS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
   <style>
+    :root { --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom); --header-h: 64px; }
+    html, body { max-width: 100%; overflow-x: hidden; }
     .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.6); }
     .glass-dark { backdrop-filter: blur(10px); background: rgba(15,23,42,0.5); }
     .codewrap pre { white-space: pre; overflow-x: auto; }
     .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; }
+    /* Code size */
+    pre code { font-size: 0.85rem; word-wrap: break-word; overflow-wrap: anywhere; }
+    @media (min-width: 768px) { pre code { font-size: 0.95rem; } }
+    /* Prevent sticky header covering anchors */
+    :where(section, h1, h2, h3, h4, h5, h6) { scroll-margin-top: calc(var(--header-h) + 12px); }
+    /* Images responsive */
+    img { max-width: 100%; height: auto; }
+    /* Reduce intense shadows on small screens */
+    @media (max-width: 767px) { .shadow-smooth { box-shadow: 0 6px 18px rgba(0,0,0,0.12); } }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased">
-  <!-- Navbar -->
-  <header class="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur">
-    <nav class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
-      <a href="#" class="text-xl font-extrabold tracking-tight">Pages x Cloudflare</a>
-      <div class="hidden md:flex gap-6 text-sm">
-        <a href="#intro" class="hover:text-blue-500">Giới thiệu</a>
-        <a href="#prereq" class="hover:text-blue-500">Chuẩn bị</a>
-        <a href="#records" class="hover:text-blue-500">DNS Records</a>
-        <a href="#steps" class="hover:text-blue-500">Các bước</a>
-        <a href="#troubleshoot" class="hover:text-blue-500">Lỗi thường gặp</a>
-        <a href="#faq" class="hover:text-blue-500">FAQ</a>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased pt-[calc(var(--safe-top))]">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/95 dark:bg-slate-900/90 backdrop-blur">
+    <nav class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between" style="min-height: var(--header-h)">
+      <a href="#" class="text-lg md:text-xl font-extrabold tracking-tight">Pages × Cloudflare</a>
+
+      <!-- Desktop menu -->
+      <div class="hidden md:flex gap-4 lg:gap-6 text-sm">
+        <a href="#intro" class="py-2 hover:text-blue-500">Giới thiệu</a>
+        <a href="#prereq" class="py-2 hover:text-blue-500">Chuẩn bị</a>
+        <a href="#records" class="py-2 hover:text-blue-500">DNS</a>
+        <a href="#steps" class="py-2 hover:text-blue-500">Các bước</a>
+        <a href="#troubleshoot" class="py-2 hover:text-blue-500">Lỗi</a>
+        <a href="#faq" class="py-2 hover:text-blue-500">FAQ</a>
       </div>
-      <div class="flex items-center gap-3">
-        <button id="toggleTheme" class="inline-flex items-center gap-2 rounded-xl border border-slate-300/50 dark:border-slate-700/60 px-3 py-1.5 text-sm hover:shadow-smooth transition">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.64 13A9 9 0 1 1 11 2.36 7 7 0 0 0 21.64 13z"/></svg>
-          <span>Theme</span>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2">
+        <button id="toggleTheme" class="inline-flex items-center gap-1.5 rounded-xl border border-slate-300/60 dark:border-slate-700/60 px-3 py-2 text-sm hover:shadow transition" aria-label="Toggle theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.64 13A9 9 0 1 1 11 2.36 7 7 0 0 0 21.64 13z"/></svg>
+          <span class="hidden sm:inline">Theme</span>
         </button>
-        <a class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1.5" href="#get-started">Get Started</a>
+        <button id="btnMenu" class="md:hidden rounded-xl border border-slate-300/60 dark:border-slate-700/60 px-3 py-2 text-sm" aria-expanded="false" aria-controls="mobileMenu" aria-label="Toggle menu">
+          ☰
+        </button>
+        <a class="hidden md:inline-block rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2" href="#get-started">Get Started</a>
       </div>
     </nav>
+    <!-- Mobile dropdown -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
+      <div class="mx-auto max-w-6xl px-4 py-2 grid grid-cols-2 gap-2 text-sm">
+        <a href="#intro" class="py-3">Giới thiệu</a>
+        <a href="#prereq" class="py-3">Chuẩn bị</a>
+        <a href="#records" class="py-3">DNS</a>
+        <a href="#steps" class="py-3">Các bước</a>
+        <a href="#troubleshoot" class="py-3">Lỗi</a>
+        <a href="#faq" class="py-3">FAQ</a>
+        <a href="#get-started" class="col-span-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-center py-3">Get Started</a>
+      </div>
+    </div>
   </header>
 
   <!-- Hero -->
   <section id="intro" class="relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-b from-blue-50 to-transparent dark:from-blue-950/20 pointer-events-none"></div>
-    <div class="mx-auto max-w-6xl px-4 py-16 md:py-24 relative">
-      <div class="grid md:grid-cols-2 gap-8 items-center">
+    <div class="mx-auto max-w-6xl px-4 py-12 md:py-20 relative">
+      <div class="grid md:grid-cols-2 gap-6 md:gap-10 items-center">
         <div data-aos="fade-up">
-          <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+          <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
             Custom Domain cho <span class="text-blue-600">GitHub Pages</span> với Cloudflare
           </h1>
-          <p class="mt-4 text-lg text-slate-600 dark:text-slate-300">
+          <p class="mt-3 md:mt-4 text-base md:text-lg text-slate-700 dark:text-slate-300">
             Tutorial ngắn gọn, chính xác, có lệnh CLI & hình minh họa. Copy–paste, done.
           </p>
-          <div class="mt-6 flex gap-3">
-            <a href="#steps" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 font-semibold">Bắt đầu</a>
-            <a href="#records" class="rounded-xl border border-slate-300 dark:border-slate-700 px-5 py-3 font-semibold hover:shadow-smooth">DNS Records</a>
+          <div class="mt-5 md:mt-6 flex flex-col sm:flex-row gap-3 max-w-sm">
+            <a href="#steps" class="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 font-semibold text-center">Bắt đầu</a>
+            <a href="#records" class="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-3 font-semibold text-center">DNS Records</a>
           </div>
         </div>
         <div class="relative" data-aos="fade-left">
-          <img class="rounded-2xl shadow-smooth ring-1 ring-slate-200 dark:ring-slate-800" alt="GitHub Pages Overview" src="/github_page.jpg"/>
+          <img class="rounded-2xl shadow ring-1 ring-slate-200 dark:ring-slate-800 w-full h-auto" alt="GitHub Pages Overview" src="/github_page.jpg"/>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Prerequisites -->
-  <section id="prereq" class="mx-auto max-w-6xl px-4 py-12">
-    <div class="grid md:grid-cols-2 gap-8">
-      <div data-aos="fade-up" class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 glass glass-dark">
-        <h2 class="text-2xl font-bold mb-3">Bạn cần gì?</h2>
-        <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+  <section id="prereq" class="mx-auto max-w-6xl px-4 py-10">
+    <div class="grid md:grid-cols-2 gap-4 md:gap-6">
+      <div data-aos="fade-up" class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 glass glass-dark">
+        <h2 class="text-xl md:text-2xl font-bold mb-2 md:mb-3">Bạn cần gì?</h2>
+        <ul class="list-disc pl-5 space-y-1.5 md:space-y-2 text-slate-700 dark:text-slate-300">
           <li>Tài khoản <strong>Cloudflare</strong> quản lý DNS</li>
           <li><strong>Domain</strong> đang hoạt động</li>
           <li><strong>GitHub</strong> + repository đã bật Pages</li>
           <li>(Tuỳ chọn) <strong>GitHub CLI</strong> để thao tác nhanh: <code>gh</code></li>
         </ul>
       </div>
-      <div data-aos="fade-up" data-aos-delay="50" class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 glass glass-dark">
-        <h3 class="text-xl font-semibold mb-2">Tạo repo & bật Pages (CLI)</h3>
+      <div data-aos="fade-up" data-aos-delay="50" class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 glass glass-dark">
+        <h3 class="text-lg md:text-xl font-semibold mb-2">Tạo repo & bật Pages (CLI)</h3>
         <div class="relative codewrap">
           <button class="copy-btn rounded-lg bg-slate-800/80 hover:bg-slate-800 text-white text-xs px-2 py-1" data-copy="#code-quickstart">Copy</button>
           <pre><code id="code-quickstart" class="language-bash">gh repo create github-pages-custom-domain-config --public --description "Step-by-step guide to configuring custom domains for GitHub Pages using Cloudflare (with images)." --add-readme --clone
@@ -130,13 +145,13 @@ git push -u origin pages</code></pre>
   </section>
 
   <!-- DNS Records -->
-  <section id="records" class="mx-auto max-w-6xl px-4 py-12">
-    <h2 class="text-3xl font-extrabold">DNS Records cho GitHub Pages</h2>
-    <p class="mt-2 text-slate-600 dark:text-slate-300">Thêm các bản ghi sau trong Cloudflare (DNS &rarr; Records):</p>
+  <section id="records" class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl md:text-3xl font-extrabold">DNS Records cho GitHub Pages</h2>
+    <p class="mt-2 text-slate-700 dark:text-slate-300">Thêm các bản ghi sau trong Cloudflare (DNS → Records):</p>
 
-    <div class="mt-6 grid md:grid-cols-2 gap-8">
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-xl font-semibold mb-2">IPv4 (A)</h3>
+    <div class="mt-5 grid md:grid-cols-2 gap-4 md:gap-6">
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-lg md:text-xl font-semibold mb-2">IPv4 (A)</h3>
         <div class="relative codewrap">
           <button class="copy-btn rounded-lg bg-slate-800/80 hover:bg-slate-800 text-white text-xs px-2 py-1" data-copy="#code-ipv4">Copy</button>
           <pre><code id="code-ipv4" class="language-plaintext">185.199.108.153
@@ -145,8 +160,8 @@ git push -u origin pages</code></pre>
 185.199.111.153</code></pre>
         </div>
       </div>
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-xl font-semibold mb-2">IPv6 (AAAA)</h3>
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-lg md:text-xl font-semibold mb-2">IPv6 (AAAA)</h3>
         <div class="relative codewrap">
           <button class="copy-btn rounded-lg bg-slate-800/80 hover:bg-slate-800 text-white text-xs px-2 py-1" data-copy="#code-ipv6">Copy</button>
           <pre><code id="code-ipv6" class="language-plaintext">2606:50c0:8000::153
@@ -157,104 +172,85 @@ git push -u origin pages</code></pre>
       </div>
     </div>
 
-    <div class="mt-6 grid md:grid-cols-2 gap-8">
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-xl font-semibold mb-2">Bản ghi cho apex (root) domain</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400">Thêm 4 bản ghi A và 4 bản ghi AAAA ở trên cho tên host <code>@</code>.</p>
+    <div class="mt-5 grid md:grid-cols-2 gap-4 md:gap-6">
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-lg md:text-xl font-semibold mb-2">Apex (root) domain</h3>
+        <p class="text-sm md:text-base text-slate-700 dark:text-slate-300">Thêm 4 bản ghi A và 4 bản ghi AAAA ở trên cho tên host <code>@</code>.</p>
       </div>
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-xl font-semibold mb-2">Bản ghi cho subdomain (www)</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-400">Dùng CNAME: <code>www</code> → <code>YOUR-USER.github.io</code> hoặc <code>your-repo.github.io</code>.</p>
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-lg md:text-xl font-semibold mb-2">Subdomain (www)</h3>
+        <p class="text-sm md:text-base text-slate-700 dark:text-slate-300">Dùng CNAME: <code>www</code> → <code>YOUR-USER.github.io</code> (không cần AAAA).</p>
       </div>
     </div>
   </section>
 
   <!-- Steps -->
-  <section id="steps" class="mx-auto max-w-6xl px-4 py-12">
-    <h2 class="text-3xl font-extrabold">Thiết lập từng bước</h2>
+  <section id="steps" class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl md:text-3xl font-extrabold">Thiết lập từng bước</h2>
 
-    <ol class="mt-6 space-y-6">
-      <li class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60" data-aos="fade-up">
-        <h3 class="text-xl font-semibold">1) Trỏ nameserver sang Cloudflare</h3>
+    <ol class="mt-5 md:mt-6 space-y-4 md:space-y-6">
+      <li class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60" data-aos="fade-up">
+        <h3 class="text-lg md:text-xl font-semibold">1) Trỏ nameserver sang Cloudflare</h3>
         <p class="mt-2 text-slate-700 dark:text-slate-300">Trong nơi mua domain, đổi NS theo cặp mà Cloudflare cung cấp.</p>
-        <!-- <img class="mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="Cloudflare DNS Dashboard" src="https://developers.cloudflare.com/dns/static/dns-overview-dashboard.png"/> -->
+        <!-- <img class="mt-3 md:mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="Cloudflare DNS Dashboard" src="https://developers.cloudflare.com/dns/static/dns-overview-dashboard.png"/> -->
       </li>
 
-      <li class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60" data-aos="fade-up">
-        <h3 class="text-xl font-semibold">2) Thêm DNS records</h3>
-        <p class="mt-2">A/AAAA cho root domain; CNAME cho <code>www</code>.</p>
-        <img class="mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="Cloudflare DNS Records UI" src="/cloudflare_dns_add_domain.jpg"/>
+      <li class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60" data-aos="fade-up">
+        <h3 class="text-lg md:text-xl font-semibold">2) Thêm DNS records</h3>
+        <p class="mt-2">A/AAAA cho root domain; CNAME cho <code>www</code> hoặc subdomain khác.</p>
+        <img class="mt-3 md:mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="Cloudflare DNS Records UI" src="/cloudflare_dns_add_domain.jpg"/>
       </li>
 
-      <li class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60" data-aos="fade-up">
-        <h3 class="text-xl font-semibold">3) Cấu hình GitHub Pages</h3>
-        <p class="mt-2">Settings → Pages → Custom domain → nhập <code>www.example.com</code>. GitHub sẽ tạo file <code>CNAME</code> tự động.</p>
-        <img class="mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="GitHub Pages Custom Domain" src="/custom_domain.jpg"/>
+      <li class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60" data-aos="fade-up">
+        <h3 class="text-lg md:text-xl font-semibold">3) Cấu hình GitHub Pages</h3>
+        <p class="mt-2">Settings → Pages → Custom domain → nhập domain. GitHub sẽ tạo file <code>CNAME</code> tự động.</p>
+        <img class="mt-3 md:mt-4 rounded-xl ring-1 ring-slate-200 dark:ring-slate-800" alt="GitHub Pages Custom Domain" src="/custom_domain.jpg"/>
       </li>
 
-      <li class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60" data-aos="fade-up">
-        <h3 class="text-xl font-semibold">4) Bật HTTPS</h3>
-        <p class="mt-2">Trong Cloudflare: SSL/TLS → bật "Always Use HTTPS" & "Automatic HTTPS Rewrites".</p>
+      <li class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60" data-aos="fade-up">
+        <h3 class="text-lg md:text-xl font-semibold">4) Bật HTTPS</h3>
+        <p class="mt-2">Cloudflare: SSL/TLS → bật "Always Use HTTPS" & "Automatic HTTPS Rewrites".</p>
       </li>
     </ol>
   </section>
 
   <!-- Troubleshooting -->
-  <section id="troubleshoot" class="mx-auto max-w-6xl px-4 py-12">
-    <h2 class="text-3xl font-extrabold">Lỗi thường gặp</h2>
-    <div class="mt-6 grid md:grid-cols-2 gap-8">
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-lg font-semibold">InvalidAAAARecordError (GitHub Pages)</h3>
-        <p class="text-sm mt-2">GitHub khuyến nghị dùng CNAME cho <code>www</code> thay vì AAAA. Với root domain, hãy dùng A & AAAA đúng dải IP của GitHub Pages.</p>
+  <section id="troubleshoot" class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl md:text-3xl font-extrabold">Lỗi thường gặp</h2>
+    <div class="mt-5 grid md:grid-cols-2 gap-4 md:gap-6">
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-base md:text-lg font-semibold">InvalidAAAARecordError (GitHub Pages)</h3>
+        <p class="text-sm md:text-base mt-2 text-slate-700 dark:text-slate-300">Subdomain chỉ cần CNAME. Apex dùng A/AAAA đúng dải IP GitHub Pages.</p>
       </div>
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-lg font-semibold">Propagation chậm</h3>
-        <p class="text-sm mt-2">DNS có thể mất 5–30 phút (thậm chí vài giờ) để cập nhật toàn cầu. Kiểm tra bằng <code>dig +short yourdomain.com</code>.</p>
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-base md:text-lg font-semibold">Propagation chậm</h3>
+        <p class="text-sm md:text-base mt-2 text-slate-700 dark:text-slate-300">DNS có thể mất 5–30 phút (đôi khi vài giờ). Kiểm tra với <code>dig +short yourdomain.com</code>.</p>
       </div>
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-lg font-semibold">Không tự sinh chứng chỉ</h3>
-        <p class="text-sm mt-2">Tắt "Proxy" (đám mây cam) ở Cloudflare tạm thời cho đến khi GitHub cấp cert xong, sau đó có thể bật lại.</p>
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-base md:text-lg font-semibold">Không tự sinh chứng chỉ</h3>
+        <p class="text-sm md:text-base mt-2 text-slate-700 dark:text-slate-300">Tắt tạm Proxy (mây cam) cho subdomain đến khi GitHub cấp cert, rồi bật lại.</p>
       </div>
-      <div class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60">
-        <h3 class="text-lg font-semibold">Sai CNAME</h3>
-        <p class="text-sm mt-2">Đảm bảo <code>www</code> → <code>YOUR-USER.github.io</code> (đúng chữ thường/hoa và repo).</p>
+      <div class="p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60">
+        <h3 class="text-base md:text-lg font-semibold">Sai CNAME</h3>
+        <p class="text-sm md:text-base mt-2 text-slate-700 dark:text-slate-300">Đảm bảo <code>sub.example.com</code> → <code>username.github.io</code>.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="mx-auto max-w-6xl px-4 py-12">
-    <h2 class="text-3xl font-extrabold">FAQ</h2>
-    <div class="mt-6 space-y-4">
-      <details class="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white/70 dark:bg-slate-900/60">
-        <summary class="cursor-pointer font-semibold">Nên dùng apex domain hay www?</summary>
-        <p class="mt-2 text-slate-700 dark:text-slate-300">Khuyến nghị dùng <code>www</code> (CNAME) vì CDN/redirect linh hoạt hơn. Apex vẫn ok nếu thêm A/AAAA.</p>
-      </details>
-      <details class="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white/70 dark:bg-slate-900/60">
-        <summary class="cursor-pointer font-semibold">Có cần file CNAME trong repo?</summary>
-        <p class="mt-2">Khi set Custom domain trong Pages, GitHub tự tạo file này. Nếu fork/migrate, hãy giữ nguyên file.</p>
-      </details>
-      <details class="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white/70 dark:bg-slate-900/60">
-        <summary class="cursor-pointer font-semibold">Có thể dùng www CNAME trỏ sang apex không?</summary>
-        <p class="mt-2">Không chuẩn. Nên để www → GitHub, và apex → A/AAAA theo dải IP GitHub Pages.</p>
-      </details>
     </div>
   </section>
 
   <!-- Footer / Get Started -->
-  <!-- <section id="get-started" class="border-t border-slate-200 dark:border-slate-800">
-    <div class="mx-auto max-w-6xl px-4 py-12 text-center">
-      <h2 class="text-2xl md:text-3xl font-extrabold">Sẵn sàng trỏ domain?</h2>
-      <p class="mt-2 text-slate-600 dark:text-slate-300">Clone template này, chỉnh lại domain, done.</p>
-      <div class="mt-5">
+  <section id="get-started" class="border-t border-slate-200 dark:border-slate-800 pb-[calc(var(--safe-bottom)+8px)]">
+    <div class="mx-auto max-w-6xl px-4 py-10 text-center">
+      <!-- <h2 class="text-xl md:text-3xl font-extrabold">Sẵn sàng trỏ domain?</h2>
+      <p class="mt-2 text-slate-700 dark:text-slate-300">Clone template này, chỉnh domain, done.</p>
+      <div class="mt-4 md:mt-5">
         <pre class="inline-block text-left p-4 rounded-xl bg-slate-900 text-slate-100 overflow-auto"><code class="language-bash"># Clone repo & serve
 git clone https://github.com/YOUR-USER/github-pages-custom-domain-config
 cd github-pages-custom-domain-config
 # mở index.html trong trình duyệt</code></pre>
-      </div>
-      <p class="mt-6 text-xs text-slate-500">Built with Tailwind, AOS, highlight.js. Dark-mode ready.</p>
+      </div> -->
+      <p class="mt-5 text-xs text-slate-500">Built with Tailwind, AOS, highlight.js. Dark-mode ready.</p>
     </div>
-  </section> -->
+  </section>
 
   <script>
     // Theme toggle
@@ -264,9 +260,21 @@ cd github-pages-custom-domain-config
       root.classList.toggle('dark', dark);
       localStorage.theme = dark ? 'dark' : 'light';
     };
-    // init
     setTheme(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches));
     toggle.addEventListener('click', () => setTheme(!root.classList.contains('dark')));
+
+    // Mobile menu
+    const btnMenu = document.getElementById('btnMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+    btnMenu?.addEventListener('click', () => {
+      const expanded = btnMenu.getAttribute('aria-expanded') === 'true';
+      btnMenu.setAttribute('aria-expanded', String(!expanded));
+      mobileMenu.classList.toggle('hidden');
+    });
+    mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      btnMenu.setAttribute('aria-expanded', 'false');
+      mobileMenu.classList.add('hidden');
+    }));
 
     // highlight
     document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
@@ -287,11 +295,7 @@ cd github-pages-custom-domain-config
     });
 
     // AOS init
-    AOS.init({
-      once: true,
-      duration: 600,
-      easing: 'ease-out-cubic'
-    });
+    AOS.init({ once: true, duration: 500, easing: 'ease-out-cubic' });
   </script>
 </body>
 </html>
